@@ -1,34 +1,35 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Overlay, ModalStyled } from './Modal.styles';
 
-class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onClose);
-  }
+export default function Modal({ image, closeModal }) {
+  useEffect(() => {
+    const handleKeydown = e => {
+      if (e.code === 'Escape') {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeydown);
+    return () => {
+      window.removeEventListener('keydown', handleKeydown);
+    };
+  });
 
-  onClose = e => {
-    if (e.code === 'Escape') {
-      this.props.closeModal();
+  const handleBackdropClick = e => {
+    if (e.target === e.currentTarget) {
+      closeModal();
     }
   };
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onClose);
-  }
-
-  render() {
-    return (
-      <Overlay onClick={this.props.closeModal}>
-        <ModalStyled>
-          <img src={this.props.image} alt="big mode" />
-        </ModalStyled>
-      </Overlay>
-    );
-  }
+  return (
+    <Overlay onClick={handleBackdropClick}>
+      <ModalStyled>
+        <img src={image} alt="big mode" />
+      </ModalStyled>
+    </Overlay>
+  );
 }
-export default Modal;
 
 Modal.propTypes = {
   closeModal: PropTypes.func.isRequired,

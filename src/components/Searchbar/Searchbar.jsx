@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -9,37 +9,34 @@ import {
   SearchFormButtonLabel,
 } from './Searchbar.styles';
 
-class Searchbar extends Component {
-  state = {
-    imageName: '',
+function Searchbar({ onSubmit }) {
+  const [imageName, setImageName] = useState('');
+
+  const handleNameChange = evt => {
+    setImageName(evt.currentTarget.value.toLowerCase());
   };
 
-  handleNameChange = evt => {
-    this.setState({ imageName: evt.currentTarget.value.toLowerCase() });
-  };
-  handleSubmit = evt => {
+  const handleSubmit = evt => {
     evt.preventDefault();
-
-    this.props.onSubmit(this.state.imageName);
+    onSubmit(imageName);
   };
-  render() {
-    return (
-      <SearchBar>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormButton type="submit">
-            <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-          </SearchFormButton>
 
-          <SearchFormInput
-            type="text"
-            autocomplete="off"
-            placeholder="Search images and photos"
-            onChange={this.handleNameChange}
-          />
-        </SearchForm>
-      </SearchBar>
-    );
-  }
+  return (
+    <SearchBar>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchFormButton type="submit">
+          <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+        </SearchFormButton>
+
+        <SearchFormInput
+          type="text"
+          autocomplete="off"
+          placeholder="Search images and photos"
+          onChange={handleNameChange}
+        />
+      </SearchForm>
+    </SearchBar>
+  );
 }
 
 export default Searchbar;
