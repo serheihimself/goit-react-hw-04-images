@@ -16,15 +16,50 @@ export default App = () => {
   const [error, setError] = useState('');
   const [totalImages, setTotalImages] = useState(0);
 
+  useEffect(() => {
+    try {
+      setPending(true);
+      const { images, totalImages } = searchImage(search, page);
+      if (images.length === 0) {
+        setError('Were sorry, images is not found!');
+      }
+      setImages(prev => [...prev.images, ...images]);
+      setError('');
+      setTotalImages(totalImages);
+    } catch (error) {
+      setError('Ooops..Something went wrong!');
+    } finally {
+      setPending(false);
+    }
+  }, [search, page]);
+
+  const searchNewImage = async inputValue => {
+    setSearch(inputValue);
+    setPage(1);
+    setImages([]);
+  };
+
+  const loadMoreButton = async () => {
+    setPage(prev => prev.page + 1);
+  };
+
+  const showModal = imageId => {
+    setModal(imageId);
+  };
+
+  const closeModal = () => {
+    setModal('');
+  };
+
   return (
     <Container>
-      <Searchbar onSubmit={this.searchNewImage} />
-      <ImageGallery images={images} showModal={this.showModal} />
+      <Searchbar onSubmit={searchNewImage} />
+      <ImageGallery images={images} showModal={showModal} />
       {images.length !== totalImages && !pending && (
-        <Button loadMore={this.loadMoreButton} />
+        <Button loadMore={loadMoreButton} />
       )}
       {pending && <Loader />}
-      {modal && <Modal image={modal} closeModal={this.closeModal} />}
+      {modal && <Modal image={modal} closeModal={closeModal} />}
       {error && <p>{error}</p>}
     </Container>
   );
