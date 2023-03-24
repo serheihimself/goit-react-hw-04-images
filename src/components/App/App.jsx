@@ -25,7 +25,7 @@ export default function App() {
         if (images.length === 0) {
           setError('Were sorry, images is not found!');
         }
-        setImages(prev => [...prev.images, ...images]);
+        setImages(prev => [...prev, ...images]);
         setError('');
         setTotalImages(totalImages);
       } catch (error) {
@@ -44,7 +44,7 @@ export default function App() {
   };
 
   const loadMoreButton = async () => {
-    setPage(prev => prev.page + 1);
+    setPage(() => page + 1);
   };
 
   const showModal = imageId => {
