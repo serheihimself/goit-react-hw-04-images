@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Searchbar from '../Searchbar/Searchbar';
 import Modal from '../Modal/Modal';
 import Loader from '../Loader/Loader';
@@ -7,72 +7,95 @@ import Button from '../Button/Button';
 import { searchImage } from '../../services/servicesApi';
 import { Container } from './App.styles';
 
-class App extends Component {
-  state = {
-    search: '',
-    images: [],
-    page: 1,
-    pending: false,
-    modal: '',
-    error: '',
-    totalImages: 0,
-  };
+export default App = () => {
+  const [search, setSearch] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pending, setPending] = useState(false);
+  const [modal, setModal] = useState('');
+  const [error, setError] = useState('');
+  const [totalImages, setTotalImages] = useState(0);
 
-  async componentDidUpdate(_, prevState) {
-    const { search, page } = this.state;
-    if (search !== prevState.search || page !== prevState.page) {
-      try {
-        this.setState({ pending: true });
-        const { images, totalImages } = await searchImage(search, page);
-        if (images.length === 0) {
-          this.setState({
-            error: 'Were sorry, images is not found!',
-          });
-        }
-        this.setState(prevState => ({
-          images: [...prevState.images, ...images],
-          error: '',
-          totalImages,
-        }));
-      } catch (error) {
-        this.setState({ error: 'Ooops..Something went wrong!' });
-      } finally {
-        this.setState({ pending: false });
-      }
-    }
-  }
+  return (
+    <Container>
+      <Searchbar onSubmit={this.searchNewImage} />
+      <ImageGallery images={images} showModal={this.showModal} />
+      {images.length !== totalImages && !pending && (
+        <Button loadMore={this.loadMoreButton} />
+      )}
+      {pending && <Loader />}
+      {modal && <Modal image={modal} closeModal={this.closeModal} />}
+      {error && <p>{error}</p>}
+    </Container>
+  );
+};
 
-  searchNewImage = async inputValue => {
-    this.setState({ search: inputValue, page: 1, images: [] });
-  };
+// class App extends Component {
+//   state = {
+//     search: '',
+//     images: [],
+//     page: 1,
+//     pending: false,
+//     modal: '',
+//     error: '',
+//     totalImages: 0,
+//   };
 
-  loadMoreButton = async () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
-  };
+// async componentDidUpdate(_, prevState) {
+//   const { search, page } = this.state;
+//   if (search !== prevState.search || page !== prevState.page) {
+//     try {
+//       this.setState({ pending: true });
+//       const { images, totalImages } = await searchImage(search, page);
+//       if (images.length === 0) {
+//         this.setState({
+//           error: 'Were sorry, images is not found!',
+//         });
+//       }
+//       this.setState(prevState => ({
+//         images: [...prevState.images, ...images],
+//         error: '',
+//         totalImages,
+//       }));
+//     } catch (error) {
+//       this.setState({ error: 'Ooops..Something went wrong!' });
+//     } finally {
+//       this.setState({ pending: false });
+//     }
+//   }
+// }
 
-  showModal = imageId => {
-    this.setState({ modal: imageId });
-  };
+// searchNewImage = async inputValue => {
+//   this.setState({ search: inputValue, page: 1, images: [] });
+// };
 
-  closeModal = () => {
-    this.setState({ modal: '' });
-  };
+// loadMoreButton = async () => {
+//   this.setState(prev => ({ page: prev.page + 1 }));
+// };
 
-  render() {
-    const { images, pending, modal, totalImages, error } = this.state;
-    return (
-      <Container>
-        <Searchbar onSubmit={this.searchNewImage} />
-        <ImageGallery images={images} showModal={this.showModal} />
-        {images.length !== totalImages && !pending && (
-          <Button loadMore={this.loadMoreButton} />
-        )}
-        {pending && <Loader />}
-        {modal && <Modal image={modal} closeModal={this.closeModal} />}
-        {error && <p>{error}</p>}
-      </Container>
-    );
-  }
-}
+// showModal = imageId => {
+//   this.setState({ modal: imageId });
+// };
 
-export default App;
+// closeModal = () => {
+//   this.setState({ modal: '' });
+// };
+
+//   render() {
+//     const { images, pending, modal, totalImages, error } = this.state;
+// return (
+//   <Container>
+//     <Searchbar onSubmit={this.searchNewImage} />
+//     <ImageGallery images={images} showModal={this.showModal} />
+//     {images.length !== totalImages && !pending && (
+//       <Button loadMore={this.loadMoreButton} />
+//     )}
+//     {pending && <Loader />}
+//     {modal && <Modal image={modal} closeModal={this.closeModal} />}
+//     {error && <p>{error}</p>}
+//   </Container>
+// );
+//   }
+// }
+
+// export default App;
