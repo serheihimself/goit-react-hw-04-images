@@ -7,7 +7,7 @@ import Button from '../Button/Button';
 import { searchImage } from '../../services/servicesApi';
 import { Container } from './App.styles';
 
-export default App = () => {
+export default function App() {
   const [search, setSearch] = useState('');
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
@@ -17,20 +17,24 @@ export default App = () => {
   const [totalImages, setTotalImages] = useState(0);
 
   useEffect(() => {
-    try {
+    if (!search) return;
+    const imgGalleryList = async (search, page) => {
       setPending(true);
-      const { images, totalImages } = searchImage(search, page);
-      if (images.length === 0) {
-        setError('Were sorry, images is not found!');
+      try {
+        const { images, totalImages } = await searchImage(search, page);
+        if (images.length === 0) {
+          setError('Were sorry, images is not found!');
+        }
+        setImages(prev => [...prev.images, ...images]);
+        setError('');
+        setTotalImages(totalImages);
+      } catch (error) {
+        setError('Ooops..Something went wrong!');
+      } finally {
+        setPending(false);
       }
-      setImages(prev => [...prev.images, ...images]);
-      setError('');
-      setTotalImages(totalImages);
-    } catch (error) {
-      setError('Ooops..Something went wrong!');
-    } finally {
-      setPending(false);
-    }
+    };
+    imgGalleryList(search, page);
   }, [search, page]);
 
   const searchNewImage = async inputValue => {
@@ -63,7 +67,7 @@ export default App = () => {
       {error && <p>{error}</p>}
     </Container>
   );
-};
+}
 
 // class App extends Component {
 //   state = {
